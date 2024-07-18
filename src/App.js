@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CanadaFlag from './canada-flag.png';
+import MexicoFlag from './mexico-flag.png';
 import './App.css'; // Custom CSS
 import config from './countriesConfig.json';
 import { calculateCanadaContributions, calculateCanadaTaxes } from './canada';
@@ -131,7 +132,9 @@ function App() {
       <div className="card shadow-sm">
         <div className="card-body">
           <h2 className="card-title text-center mb-4">
-            Payroll Employer Contributions Calculator for {country} <img src={CanadaFlag} alt="Canada Flag" width="30" height="20" className="ml-2" />
+            Payroll Employer Contributions Calculator for {country} 
+            {country === 'Canada' && <img src={CanadaFlag} alt="Canada Flag" width="30" height="20" className="ml-2" />}
+            {country === 'Mexico' && <img src={MexicoFlag} alt="Mexico Flag" width="30" height="20" className="ml-2" />}
           </h2>
 
           <div className="mb-3">
