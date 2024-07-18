@@ -85,14 +85,15 @@ function App() {
     if (!result) return null;
 
     const annualEmployerCosts = parseFloat(result.totalBudgetCAD) - parseFloat(result.annualSalary);
-    const monthlyGrossSalary = (parseFloat(result.annualSalary) / 12).toFixed(2);
-    const monthlyEmployerCosts = (annualEmployerCosts / 12).toFixed(2);
-    const monthlyTotalCost = (parseFloat(result.totalBudgetCAD) / 12).toFixed(2);
-    const monthlyNetPay = (parseFloat(result.employeeNetPayCAD) / 12).toFixed(2);
-    const hourlyGrossSalary = (parseFloat(result.annualSalary) / 2080).toFixed(2);
-    const hourlyEmployerCosts = (annualEmployerCosts / 2080).toFixed(2);
-    const hourlyTotalCost = (parseFloat(result.totalBudgetCAD) / 2080).toFixed(2);
-    const hourlyNetPay = (parseFloat(result.employeeNetPayCAD) / 2080).toFixed(2);
+    // Commented out unused variables
+    // const monthlyGrossSalary = (parseFloat(result.annualSalary) / 12).toFixed(2);
+    // const monthlyEmployerCosts = (annualEmployerCosts / 12).toFixed(2);
+    // const monthlyTotalCost = (parseFloat(result.totalBudgetCAD) / 12).toFixed(2);
+    // const monthlyNetPay = (parseFloat(result.employeeNetPayCAD) / 12).toFixed(2);
+    // const hourlyGrossSalary = (parseFloat(result.annualSalary) / 2080).toFixed(2);
+    // const hourlyEmployerCosts = (annualEmployerCosts / 2080).toFixed(2);
+    // const hourlyTotalCost = (parseFloat(result.totalBudgetCAD) / 2080).toFixed(2);
+    // const hourlyNetPay = (parseFloat(result.employeeNetPayCAD) / 2080).toFixed(2);
 
     return (
       <div className="result mt-4 p-3 bg-light">
