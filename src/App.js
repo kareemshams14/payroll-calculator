@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CanadaFlag from './canada-flag.png';
 import './App.css'; // Custom CSS
+import config from './countriesConfig.json';
+import { calculateCanadaContributions, calculateCanadaTaxes } from './canada';
+import { calculateMexicoContributions, calculateMexicoTaxes } from './mexico';
 
 function App() {
+  const [country, setCountry] = useState('Canada');
   const [hourlyRate, setHourlyRate] = useState('');
   const [adminCostPercentage, setAdminCostPercentage] = useState('');
   const [vacationDays, setVacationDays] = useState(0); // Default to 0 days
@@ -22,62 +26,39 @@ function App() {
     }
 
     const annualSalary = hourly * annualHours;
+    const { conversionRateUSD, currency } = config[country];
+    let contributions = {};
+    let taxes = {};
 
-    // Conversion rates (example values, should be updated with real-time rates if possible)
-    const conversionRateUSD = 0.75;
-
-    // Canada contributions
-    let cppContribution = 0;
-    let eiContribution = 0;
-    let ehtContribution = 0;
-    let vacationPay = 0;
-    let holidayPay = 0;
-    let employeeCpp = 0;
-    let employeeEi = 0;
-
-    const cppRate = 0.0595;
-    const cppMaxContribution = 3755.45;
-    cppContribution = Math.min((annualSalary - 3500) * cppRate, cppMaxContribution);
-    employeeCpp = cppContribution;
-
-    const eiRate = 0.0221;
-    const eiMaxContribution = 889.54; // Employee max contribution
-    eiContribution = Math.min(annualSalary * eiRate, eiMaxContribution);
-    employeeEi = eiContribution;
-
-    const ehtRate = 0.0195;
-    ehtContribution = annualSalary * ehtRate;
-
-    vacationPay = vacationHours * hourly; // Vacation pay calculated based on vacation days
-    holidayPay = hourly * 8 * 9; // 9 statutory holidays
+    if (country === 'Canada') {
+      contributions = calculateCanadaContributions(annualSalary);
+      taxes = calculateCanadaTaxes(annualSalary);
+    } else if (country === 'Mexico') {
+      contributions = calculateMexicoContributions(annualSalary);
+      taxes = calculateMexicoTaxes(annualSalary);
+    }
 
     const totalAdminCost = annualSalary * adminCost;
-    const totalBudgetCAD = annualSalary + cppContribution + eiContribution + ehtContribution + vacationPay + holidayPay + totalAdminCost;
-    const totalBudgetUSD = totalBudgetCAD * conversionRateUSD;
+    const totalBudget = annualSalary + Object.values(contributions).reduce((a, b) => a + b, 0) + totalAdminCost;
+    const totalBudgetUSD = totalBudget * conversionRateUSD;
 
-    const employeeTotalDeductionsCAD = employeeCpp + employeeEi;
-    const employeeNetPayBeforeTax = annualSalary - employeeTotalDeductionsCAD;
-
-    // Calculate federal and provincial taxes
-    const federalTax = calculateFederalTax(employeeNetPayBeforeTax);
-    const provincialTax = calculateProvincialTax(employeeNetPayBeforeTax);
+    const employeeTotalDeductions = Object.values(taxes).reduce((a, b) => a + b, 0);
+    const employeeNetPayBeforeTax = annualSalary - employeeTotalDeductions;
+    const federalTax = taxes.federalTax || 0;
+    const provincialTax = taxes.provincialTax || 0;
     const totalTax = federalTax + provincialTax;
 
-    const employeeNetPayCAD = employeeNetPayBeforeTax - totalTax;
-    const employeeNetPayUSD = employeeNetPayCAD * conversionRateUSD;
+    const employeeNetPay = employeeNetPayBeforeTax - totalTax;
+    const employeeNetPayUSD = employeeNetPay * conversionRateUSD;
 
     setResult({
       annualSalary: annualSalary.toFixed(2),
-      cppContribution: cppContribution.toFixed(2),
-      eiContribution: eiContribution.toFixed(2),
-      ehtContribution: ehtContribution.toFixed(2),
-      vacationPay: vacationPay.toFixed(2),
-      holidayPay: holidayPay.toFixed(2),
+      contributions,
       totalAdminCost: totalAdminCost.toFixed(2),
-      totalBudgetCAD: totalBudgetCAD.toFixed(2),
+      totalBudget: totalBudget.toFixed(2),
       totalBudgetUSD: totalBudgetUSD.toFixed(2),
-      employeeTotalDeductionsCAD: (employeeTotalDeductionsCAD + totalTax).toFixed(2),
-      employeeNetPayCAD: employeeNetPayCAD.toFixed(2),
+      employeeTotalDeductions: (employeeTotalDeductions + totalTax).toFixed(2),
+      employeeNetPay: employeeNetPay.toFixed(2),
       employeeNetPayUSD: employeeNetPayUSD.toFixed(2),
       hourlyRate: hourly.toFixed(2),
       adminCostPercentage: adminCost ? (adminCost * 100).toFixed(2) : '0.00',
@@ -86,54 +67,23 @@ function App() {
       federalTax: federalTax.toFixed(2),
       provincialTax: provincialTax.toFixed(2),
       totalTax: totalTax.toFixed(2),
+      currency,
     });
-  };
-
-  const calculateFederalTax = (income) => {
-    let tax = 0;
-    if (income <= 53359) {
-      tax = income * 0.15;
-    } else if (income <= 106717) {
-      tax = (income - 53359) * 0.205 + 53359 * 0.15;
-    } else if (income <= 166525) {
-      tax = (income - 106717) * 0.26 + (106717 - 53359) * 0.205 + 53359 * 0.15;
-    } else if (income <= 237302) {
-      tax = (income - 166525) * 0.29 + (166525 - 106717) * 0.26 + (106717 - 53359) * 0.205 + 53359 * 0.15;
-    } else {
-      tax = (income - 237302) * 0.33 + (237302 - 166525) * 0.29 + (166525 - 106717) * 0.26 + (106717 - 53359) * 0.205 + 53359 * 0.15;
-    }
-    return tax;
-  };
-
-  const calculateProvincialTax = (income) => {
-    let tax = 0;
-    if (income <= 47630) {
-      tax = income * 0.0505;
-    } else if (income <= 95359) {
-      tax = (income - 47630) * 0.0915 + 47630 * 0.0505;
-    } else if (income <= 117470) {
-      tax = (income - 95359) * 0.1116 + (95359 - 47630) * 0.0915 + 47630 * 0.0505;
-    } else if (income <= 139839) {
-      tax = (income - 117470) * 0.1216 + (117470 - 95359) * 0.1116 + (95359 - 47630) * 0.0915 + 47630 * 0.0505;
-    } else {
-      tax = (income - 139839) * 0.1316 + (139839 - 117470) * 0.1216 + (117470 - 95359) * 0.1116 + (95359 - 47630) * 0.0915 + 47630 * 0.0505;
-    }
-    return tax;
   };
 
   const renderResult = () => {
     if (!result) return null;
 
-    const annualEmployerCosts = parseFloat(result.totalBudgetCAD) - parseFloat(result.annualSalary);
+    const annualEmployerCosts = parseFloat(result.totalBudget) - parseFloat(result.annualSalary);
 
     return (
       <div className="result mt-4 p-3 bg-light shadow-sm rounded">
         <h4 className="text-center">Salary Details</h4>
         <div className="summary">
-          <p><strong>Gross Annual Salary:</strong> CAD {result.annualSalary}</p>
-          <p><strong>Annual Employer Costs:</strong> CAD {annualEmployerCosts.toFixed(2)}</p>
-          <p><strong>Total Annual Cost:</strong> CAD {result.totalBudgetCAD}</p>
-          <p><strong>Net Annual Salary:</strong> CAD {result.employeeNetPayCAD}</p>
+          <p><strong>Gross Annual Salary:</strong> {result.currency} {result.annualSalary}</p>
+          <p><strong>Annual Employer Costs:</strong> {result.currency} {annualEmployerCosts.toFixed(2)}</p>
+          <p><strong>Total Annual Cost:</strong> {result.currency} {result.totalBudget}</p>
+          <p><strong>Net Annual Salary:</strong> {result.currency} {result.employeeNetPay}</p>
         </div>
 
         <button className="btn btn-link text-primary" onClick={() => setShowDetails(!showDetails)}>
@@ -145,36 +95,34 @@ function App() {
             <h5>Details:</h5>
             <div className="row">
               <div className="col-md-6">
-                <p><strong>CPP Contribution (Employer):</strong> CAD {result.cppContribution}</p>
-                <p><strong>EI Contribution (Employer):</strong> CAD {result.eiContribution}</p>
-                <p><strong>EHT Contribution (Employer):</strong> CAD {result.ehtContribution}</p>
-                <p><strong>Vacation Pay (Employer):</strong> CAD {result.vacationPay}</p>
+                {Object.entries(result.contributions).map(([key, value]) => (
+                  <p key={key}><strong>{key}:</strong> {result.currency} {value}</p>
+                ))}
               </div>
               <div className="col-md-6">
-                <p><strong>Holiday Pay (Employer):</strong> CAD {result.holidayPay}</p>
-                <p><strong>Total Admin Cost:</strong> CAD {result.totalAdminCost}</p>
-                <p><strong>Total Budget (Employer) Annually:</strong> CAD {result.totalBudgetCAD}</p>
+                <p><strong>Total Admin Cost:</strong> {result.currency} {result.totalAdminCost}</p>
+                <p><strong>Total Budget (Employer) Annually:</strong> {result.currency} {result.totalBudget}</p>
                 <p><strong>Total Budget (Employer) Annually:</strong> USD {result.totalBudgetUSD}</p>
-                <p><strong>Total Budget (Employer) Hourly:</strong> CAD {(result.totalBudgetCAD / 2080).toFixed(2)}</p>
+                <p><strong>Total Budget (Employer) Hourly:</strong> {result.currency} {(result.totalBudget / 2080).toFixed(2)}</p>
                 <p><strong>Total Budget (Employer) Hourly:</strong> USD {(result.totalBudgetUSD / 2080).toFixed(2)}</p>
               </div>
             </div>
             <h5>Employee Net Pay:</h5>
             <div className="row">
               <div className="col-md-6">
-                <p><strong>Total Deductions (Employee):</strong> CAD {result.employeeTotalDeductionsCAD}</p>
-                <p><strong>Net Pay (Employee) Annually:</strong> CAD {result.employeeNetPayCAD}</p>
+                <p><strong>Total Deductions (Employee):</strong> {result.currency} {result.employeeTotalDeductions}</p>
+                <p><strong>Net Pay (Employee) Annually:</strong> {result.currency} {result.employeeNetPay}</p>
               </div>
               <div className="col-md-6">
                 <p><strong>Net Pay (Employee) Annually:</strong> USD {result.employeeNetPayUSD}</p>
-                <p><strong>Net Pay (Employee) Hourly:</strong> CAD {(result.employeeNetPayCAD / 2080).toFixed(2)}</p>
+                <p><strong>Net Pay (Employee) Hourly:</strong> {result.currency} {(result.employeeNetPay / 2080).toFixed(2)}</p>
                 <p><strong>Net Pay (Employee) Hourly:</strong> USD {(result.employeeNetPayUSD / 2080).toFixed(2)}</p>
               </div>
             </div>
             <h5>Taxes:</h5>
-            <p><strong>Federal Tax:</strong> CAD {result.federalTax}</p>
-            <p><strong>Provincial Tax:</strong> CAD {result.provincialTax}</p>
-            <p><strong>Total Tax:</strong> CAD {result.totalTax}</p>
+            <p><strong>Federal Tax:</strong> {result.currency} {result.federalTax}</p>
+            <p><strong>Provincial Tax:</strong> {result.currency} {result.provincialTax}</p>
+            <p><strong>Total Tax:</strong> {result.currency} {result.totalTax}</p>
           </div>
         )}
       </div>
@@ -186,11 +134,24 @@ function App() {
       <div className="card shadow-sm">
         <div className="card-body">
           <h2 className="card-title text-center mb-4">
-            Payroll Employer Contributions Calculator for Canada <img src={CanadaFlag} alt="Canada Flag" width="30" height="20" className="ml-2" />
+            Payroll Employer Contributions Calculator for {country} <img src={CanadaFlag} alt="Canada Flag" width="30" height="20" className="ml-2" />
           </h2>
 
           <div className="mb-3">
-            <label htmlFor="hourlyRate" className="form-label">Hourly Rate (CAD):</label>
+            <label htmlFor="country" className="form-label">Country:</label>
+            <select
+              id="country"
+              className="form-control"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+            >
+              <option value="Canada">Canada</option>
+              <option value="Mexico">Mexico</option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="hourlyRate" className="form-label">Hourly Rate ({config[country].currency}):</label>
             <input
               type="number"
               id="hourlyRate"
