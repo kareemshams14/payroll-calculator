@@ -5,14 +5,15 @@ import CanadaFlag from './canada-flag.png';
 function App() {
   const [hourlyRate, setHourlyRate] = useState('');
   const [adminCostPercentage, setAdminCostPercentage] = useState('');
-  const [vacationPayPercentage, setVacationPayPercentage] = useState(4); // Default to 4%
+  const [vacationDays, setVacationDays] = useState(0); // Default to 0 days
   const [result, setResult] = useState(null);
+  const [showDetails, setShowDetails] = useState(false);
 
   const calculateContributions = () => {
     const hourly = parseFloat(hourlyRate);
     const annualHours = 2080; // Assuming 2080 hours annually
     const adminCost = parseFloat(adminCostPercentage) / 100 || 0;
-    const vacationPayRate = parseFloat(vacationPayPercentage) / 100;
+    const vacationHours = parseFloat(vacationDays) * 8;
 
     if (isNaN(hourly)) {
       alert('Please fill in all fields correctly.');
@@ -46,8 +47,8 @@ function App() {
     const ehtRate = 0.0195;
     ehtContribution = annualSalary * ehtRate;
 
-    vacationPay = vacationPayRate ? annualSalary * vacationPayRate : 0;
-    holidayPay = hourly * 8 * 9;
+    vacationPay = vacationHours * hourly; // Vacation pay calculated based on vacation days
+    holidayPay = hourly * 8 * 9; // 9 statutory holidays
 
     const totalAdminCost = annualSalary * adminCost;
     const totalBudgetCAD = annualSalary + cppContribution + eiContribution + ehtContribution + vacationPay + holidayPay + totalAdminCost;
@@ -79,7 +80,7 @@ function App() {
       employeeNetPayUSD: employeeNetPayUSD.toFixed(2),
       hourlyRate: hourly.toFixed(2),
       adminCostPercentage: adminCost ? (adminCost * 100).toFixed(2) : '0.00',
-      vacationPayPercentage: vacationPayRate ? (vacationPayRate * 100).toFixed(2) : '0.00',
+      vacationDays,
       conversionRateUSD,
       federalTax: federalTax.toFixed(2),
       provincialTax: provincialTax.toFixed(2),
@@ -123,7 +124,7 @@ function App() {
     if (!result) return null;
 
     const annualEmployerCosts = parseFloat(result.totalBudgetCAD) - parseFloat(result.annualSalary);
-    
+
     return (
       <div className="result mt-4 p-3 bg-light">
         <h4 className="text-center">Salary Details</h4>
@@ -131,30 +132,36 @@ function App() {
         <p><strong>Annual Employer Costs:</strong> CAD {annualEmployerCosts.toFixed(2)}</p>
         <p><strong>Total Annual Cost:</strong> CAD {result.totalBudgetCAD}</p>
         <p><strong>Net Annual Salary:</strong> CAD {result.employeeNetPayCAD}</p>
-        
-        <div className="details mt-3">
-          <h5>Details:</h5>
-          <p><strong>CPP Contribution (Employer):</strong> CAD {result.cppContribution}</p>
-          <p><strong>EI Contribution (Employer):</strong> CAD {result.eiContribution}</p>
-          <p><strong>EHT Contribution (Employer):</strong> CAD {result.ehtContribution}</p>
-          <p><strong>Vacation Pay (Employer):</strong> CAD {result.vacationPay}</p>
-          <p><strong>Holiday Pay (Employer):</strong> CAD {result.holidayPay}</p>
-          <p><strong>Total Admin Cost:</strong> CAD {result.totalAdminCost}</p>
-          <p><strong>Total Budget (Employer) Annually:</strong> CAD {result.totalBudgetCAD}</p>
-          <p><strong>Total Budget (Employer) Annually:</strong> USD {result.totalBudgetUSD}</p>
-          <p><strong>Total Budget (Employer) Hourly:</strong> CAD {(result.totalBudgetCAD / 2080).toFixed(2)}</p>
-          <p><strong>Total Budget (Employer) Hourly:</strong> USD {(result.totalBudgetUSD / 2080).toFixed(2)}</p>
-          <h5>Employee Net Pay:</h5>
-          <p><strong>Total Deductions (Employee):</strong> CAD {result.employeeTotalDeductionsCAD}</p>
-          <p><strong>Net Pay (Employee) Annually:</strong> CAD {result.employeeNetPayCAD}</p>
-          <p><strong>Net Pay (Employee) Annually:</strong> USD {result.employeeNetPayUSD}</p>
-          <p><strong>Net Pay (Employee) Hourly:</strong> CAD {(result.employeeNetPayCAD / 2080).toFixed(2)}</p>
-          <p><strong>Net Pay (Employee) Hourly:</strong> USD {(result.employeeNetPayUSD / 2080).toFixed(2)}</p>
-          <h5>Taxes:</h5>
-          <p><strong>Federal Tax:</strong> CAD {result.federalTax}</p>
-          <p><strong>Provincial Tax:</strong> CAD {result.provincialTax}</p>
-          <p><strong>Total Tax:</strong> CAD {result.totalTax}</p>
-        </div>
+
+        <button className="btn btn-link" onClick={() => setShowDetails(!showDetails)}>
+          {showDetails ? 'Hide' : 'Show'} Detailed Salary Calculations
+        </button>
+
+        {showDetails && (
+          <div className="details mt-3">
+            <h5>Details:</h5>
+            <p><strong>CPP Contribution (Employer):</strong> CAD {result.cppContribution}</p>
+            <p><strong>EI Contribution (Employer):</strong> CAD {result.eiContribution}</p>
+            <p><strong>EHT Contribution (Employer):</strong> CAD {result.ehtContribution}</p>
+            <p><strong>Vacation Pay (Employer):</strong> CAD {result.vacationPay}</p>
+            <p><strong>Holiday Pay (Employer):</strong> CAD {result.holidayPay}</p>
+            <p><strong>Total Admin Cost:</strong> CAD {result.totalAdminCost}</p>
+            <p><strong>Total Budget (Employer) Annually:</strong> CAD {result.totalBudgetCAD}</p>
+            <p><strong>Total Budget (Employer) Annually:</strong> USD {result.totalBudgetUSD}</p>
+            <p><strong>Total Budget (Employer) Hourly:</strong> CAD {(result.totalBudgetCAD / 2080).toFixed(2)}</p>
+            <p><strong>Total Budget (Employer) Hourly:</strong> USD {(result.totalBudgetUSD / 2080).toFixed(2)}</p>
+            <h5>Employee Net Pay:</h5>
+            <p><strong>Total Deductions (Employee):</strong> CAD {result.employeeTotalDeductionsCAD}</p>
+            <p><strong>Net Pay (Employee) Annually:</strong> CAD {result.employeeNetPayCAD}</p>
+            <p><strong>Net Pay (Employee) Annually:</strong> USD {result.employeeNetPayUSD}</p>
+            <p><strong>Net Pay (Employee) Hourly:</strong> CAD {(result.employeeNetPayCAD / 2080).toFixed(2)}</p>
+            <p><strong>Net Pay (Employee) Hourly:</strong> USD {(result.employeeNetPayUSD / 2080).toFixed(2)}</p>
+            <h5>Taxes:</h5>
+            <p><strong>Federal Tax:</strong> CAD {result.federalTax}</p>
+            <p><strong>Provincial Tax:</strong> CAD {result.provincialTax}</p>
+            <p><strong>Total Tax:</strong> CAD {result.totalTax}</p>
+          </div>
+        )}
       </div>
     );
   };
@@ -191,13 +198,13 @@ function App() {
           </div>
 
           <div className="mb-3">
-            <label htmlFor="vacationPayPercentage" className="form-label">Vacation Pay Percentage (optional):</label>
+            <label htmlFor="vacationDays" className="form-label">Vacation Days (optional):</label>
             <input
               type="number"
-              id="vacationPayPercentage"
+              id="vacationDays"
               className="form-control"
-              value={vacationPayPercentage}
-              onChange={(e) => setVacationPayPercentage(e.target.value)}
+              value={vacationDays}
+              onChange={(e) => setVacationDays(e.target.value)}
             />
           </div>
 
