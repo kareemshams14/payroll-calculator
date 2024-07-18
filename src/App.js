@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CanadaFlag from './canada-flag.png';
-import './App.css'; // Make sure to create and include a custom CSS file
+import './App.css'; // Custom CSS
 
 function App() {
   const [hourlyRate, setHourlyRate] = useState('');
@@ -186,8 +186,7 @@ function App() {
       <div className="card shadow-sm">
         <div className="card-body">
           <h2 className="card-title text-center mb-4">
-            <img src={CanadaFlag} alt="Canada Flag" width="30" height="20" className="mr-2" />
-            Payroll Employer Contributions Calculator for Canada (CAD)
+            Payroll Employer Contributions Calculator for Canada <img src={CanadaFlag} alt="Canada Flag" width="30" height="20" className="ml-2" />
           </h2>
 
           <div className="mb-3">
@@ -195,7 +194,7 @@ function App() {
             <input
               type="number"
               id="hourlyRate"
-              className="form-control"
+              className="form-control input-small"
               value={hourlyRate}
               onChange={(e) => setHourlyRate(e.target.value)}
             />
@@ -206,7 +205,7 @@ function App() {
             <input
               type="number"
               id="adminCostPercentage"
-              className="form-control"
+              className="form-control input-small"
               value={adminCostPercentage}
               onChange={(e) => setAdminCostPercentage(e.target.value)}
             />
@@ -217,7 +216,7 @@ function App() {
             <input
               type="number"
               id="vacationDays"
-              className="form-control"
+              className="form-control input-small"
               value={vacationDays}
               onChange={(e) => setVacationDays(e.target.value)}
             />
