@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import CanadaFlag from './canada-flag.png';
+import './App.css'; // Make sure to create and include a custom CSS file
 
 function App() {
   const [hourlyRate, setHourlyRate] = useState('');
@@ -126,36 +127,50 @@ function App() {
     const annualEmployerCosts = parseFloat(result.totalBudgetCAD) - parseFloat(result.annualSalary);
 
     return (
-      <div className="result mt-4 p-3 bg-light">
+      <div className="result mt-4 p-3 bg-light shadow-sm rounded">
         <h4 className="text-center">Salary Details</h4>
-        <p><strong>Gross Annual Salary:</strong> CAD {result.annualSalary}</p>
-        <p><strong>Annual Employer Costs:</strong> CAD {annualEmployerCosts.toFixed(2)}</p>
-        <p><strong>Total Annual Cost:</strong> CAD {result.totalBudgetCAD}</p>
-        <p><strong>Net Annual Salary:</strong> CAD {result.employeeNetPayCAD}</p>
+        <div className="summary">
+          <p><strong>Gross Annual Salary:</strong> CAD {result.annualSalary}</p>
+          <p><strong>Annual Employer Costs:</strong> CAD {annualEmployerCosts.toFixed(2)}</p>
+          <p><strong>Total Annual Cost:</strong> CAD {result.totalBudgetCAD}</p>
+          <p><strong>Net Annual Salary:</strong> CAD {result.employeeNetPayCAD}</p>
+        </div>
 
-        <button className="btn btn-link" onClick={() => setShowDetails(!showDetails)}>
+        <button className="btn btn-link text-primary" onClick={() => setShowDetails(!showDetails)}>
           {showDetails ? 'Hide' : 'Show'} Detailed Salary Calculations
         </button>
 
         {showDetails && (
           <div className="details mt-3">
             <h5>Details:</h5>
-            <p><strong>CPP Contribution (Employer):</strong> CAD {result.cppContribution}</p>
-            <p><strong>EI Contribution (Employer):</strong> CAD {result.eiContribution}</p>
-            <p><strong>EHT Contribution (Employer):</strong> CAD {result.ehtContribution}</p>
-            <p><strong>Vacation Pay (Employer):</strong> CAD {result.vacationPay}</p>
-            <p><strong>Holiday Pay (Employer):</strong> CAD {result.holidayPay}</p>
-            <p><strong>Total Admin Cost:</strong> CAD {result.totalAdminCost}</p>
-            <p><strong>Total Budget (Employer) Annually:</strong> CAD {result.totalBudgetCAD}</p>
-            <p><strong>Total Budget (Employer) Annually:</strong> USD {result.totalBudgetUSD}</p>
-            <p><strong>Total Budget (Employer) Hourly:</strong> CAD {(result.totalBudgetCAD / 2080).toFixed(2)}</p>
-            <p><strong>Total Budget (Employer) Hourly:</strong> USD {(result.totalBudgetUSD / 2080).toFixed(2)}</p>
+            <div className="row">
+              <div className="col-md-6">
+                <p><strong>CPP Contribution (Employer):</strong> CAD {result.cppContribution}</p>
+                <p><strong>EI Contribution (Employer):</strong> CAD {result.eiContribution}</p>
+                <p><strong>EHT Contribution (Employer):</strong> CAD {result.ehtContribution}</p>
+                <p><strong>Vacation Pay (Employer):</strong> CAD {result.vacationPay}</p>
+              </div>
+              <div className="col-md-6">
+                <p><strong>Holiday Pay (Employer):</strong> CAD {result.holidayPay}</p>
+                <p><strong>Total Admin Cost:</strong> CAD {result.totalAdminCost}</p>
+                <p><strong>Total Budget (Employer) Annually:</strong> CAD {result.totalBudgetCAD}</p>
+                <p><strong>Total Budget (Employer) Annually:</strong> USD {result.totalBudgetUSD}</p>
+                <p><strong>Total Budget (Employer) Hourly:</strong> CAD {(result.totalBudgetCAD / 2080).toFixed(2)}</p>
+                <p><strong>Total Budget (Employer) Hourly:</strong> USD {(result.totalBudgetUSD / 2080).toFixed(2)}</p>
+              </div>
+            </div>
             <h5>Employee Net Pay:</h5>
-            <p><strong>Total Deductions (Employee):</strong> CAD {result.employeeTotalDeductionsCAD}</p>
-            <p><strong>Net Pay (Employee) Annually:</strong> CAD {result.employeeNetPayCAD}</p>
-            <p><strong>Net Pay (Employee) Annually:</strong> USD {result.employeeNetPayUSD}</p>
-            <p><strong>Net Pay (Employee) Hourly:</strong> CAD {(result.employeeNetPayCAD / 2080).toFixed(2)}</p>
-            <p><strong>Net Pay (Employee) Hourly:</strong> USD {(result.employeeNetPayUSD / 2080).toFixed(2)}</p>
+            <div className="row">
+              <div className="col-md-6">
+                <p><strong>Total Deductions (Employee):</strong> CAD {result.employeeTotalDeductionsCAD}</p>
+                <p><strong>Net Pay (Employee) Annually:</strong> CAD {result.employeeNetPayCAD}</p>
+              </div>
+              <div className="col-md-6">
+                <p><strong>Net Pay (Employee) Annually:</strong> USD {result.employeeNetPayUSD}</p>
+                <p><strong>Net Pay (Employee) Hourly:</strong> CAD {(result.employeeNetPayCAD / 2080).toFixed(2)}</p>
+                <p><strong>Net Pay (Employee) Hourly:</strong> USD {(result.employeeNetPayUSD / 2080).toFixed(2)}</p>
+              </div>
+            </div>
             <h5>Taxes:</h5>
             <p><strong>Federal Tax:</strong> CAD {result.federalTax}</p>
             <p><strong>Provincial Tax:</strong> CAD {result.provincialTax}</p>
@@ -168,9 +183,9 @@ function App() {
 
   return (
     <div className="container mt-5">
-      <div className="card">
+      <div className="card shadow-sm">
         <div className="card-body">
-          <h2 className="card-title text-center">
+          <h2 className="card-title text-center mb-4">
             <img src={CanadaFlag} alt="Canada Flag" width="30" height="20" className="mr-2" />
             Payroll Employer Contributions Calculator for Canada (CAD)
           </h2>
