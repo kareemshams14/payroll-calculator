@@ -10,7 +10,6 @@ function App() {
   const [country, setCountry] = useState('Canada');
   const [hourlyRate, setHourlyRate] = useState('');
   const [adminCostPercentage, setAdminCostPercentage] = useState('');
-  const [vacationDays, setVacationDays] = useState(0); // Default to 0 days
   const [result, setResult] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
 
@@ -18,7 +17,6 @@ function App() {
     const hourly = parseFloat(hourlyRate);
     const annualHours = 2080; // Assuming 2080 hours annually
     const adminCost = parseFloat(adminCostPercentage) / 100 || 0;
-    const vacationHours = parseFloat(vacationDays) * 8;
 
     if (isNaN(hourly)) {
       alert('Please fill in all fields correctly.');
@@ -62,7 +60,6 @@ function App() {
       employeeNetPayUSD: employeeNetPayUSD.toFixed(2),
       hourlyRate: hourly.toFixed(2),
       adminCostPercentage: adminCost ? (adminCost * 100).toFixed(2) : '0.00',
-      vacationDays,
       conversionRateUSD,
       federalTax: federalTax.toFixed(2),
       provincialTax: provincialTax.toFixed(2),
@@ -172,16 +169,18 @@ function App() {
             />
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="vacationDays" className="form-label">Vacation Days (optional):</label>
-            <input
-              type="number"
-              id="vacationDays"
-              className="form-control input-small"
-              value={vacationDays}
-              onChange={(e) => setVacationDays(e.target.value)}
-            />
-          </div>
+          {country === 'Canada' && (
+            <div className="mb-3">
+              <label htmlFor="vacationDays" className="form-label">Vacation Days (optional):</label>
+              <input
+                type="number"
+                id="vacationDays"
+                className="form-control input-small"
+                value={vacationDays}
+                onChange={(e) => setVacationDays(e.target.value)}
+              />
+            </div>
+          )}
 
           <button className="btn btn-primary w-100" onClick={calculateContributions}>Calculate</button>
           {renderResult()}
