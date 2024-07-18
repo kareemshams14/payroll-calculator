@@ -14,14 +14,14 @@
         {"upTo": 106717, "rate": 0.205},
         {"upTo": 166525, "rate": 0.26},
         {"upTo": 237302, "rate": 0.29},
-        {"upTo": Infinity, "rate": 0.33}
+        {"upTo": 999999999, "rate": 0.33}
       ],
       "provincial": [
         {"upTo": 47630, "rate": 0.0505},
         {"upTo": 95359, "rate": 0.0915},
         {"upTo": 117470, "rate": 0.1116},
         {"upTo": 139839, "rate": 0.1216},
-        {"upTo": Infinity, "rate": 0.1316}
+        {"upTo": 999999999, "rate": 0.1316}
       ]
     }
   },
