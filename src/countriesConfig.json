@@ -1,43 +1,28 @@
 {
   "Canada": {
-    "currency": "CAD",
     "conversionRateUSD": 0.75,
-    "cppRate": 0.0595,
-    "cppMaxContribution": 3755.45,
-    "eiRate": 0.0221,
-    "eiMaxContribution": 889.54,
-    "ehtRate": 0.0195,
-    "holidayDays": 9,
-    "taxBrackets": {
-      "federal": [
-        {"upTo": 53359, "rate": 0.15},
-        {"upTo": 106717, "rate": 0.205},
-        {"upTo": 166525, "rate": 0.26},
-        {"upTo": 237302, "rate": 0.29},
-        {"upTo": 999999999, "rate": 0.33}
-      ],
-      "provincial": [
-        {"upTo": 47630, "rate": 0.0505},
-        {"upTo": 95359, "rate": 0.0915},
-        {"upTo": 117470, "rate": 0.1116},
-        {"upTo": 139839, "rate": 0.1216},
-        {"upTo": 999999999, "rate": 0.1316}
-      ]
-    }
+    "currency": "CAD",
+    "taxBrackets": [
+      { "upTo": 49020, "rate": 0.15 },
+      { "upTo": 98040, "rate": 0.205 },
+      { "upTo": 151978, "rate": 0.26 },
+      { "upTo": 216511, "rate": 0.29 },
+      { "upTo": 999999999, "rate": 0.33 }
+    ]
   },
   "Mexico": {
-    "currency": "MXN",
     "conversionRateUSD": 0.05,
-    "socialSecurityRate": 0.05,
-    "holidayDays": 8,
-    "taxBrackets": {
-      "federal": [
-        {"upTo": 12500, "rate": 0.015},
-        {"upTo": 42500, "rate": 0.022},
-        {"upTo": 85000, "rate": 0.03},
-        {"upTo": 340000, "rate": 0.34},
-        {"upTo": Infinity, "rate": 0.35}
-      ]
-    }
+    "currency": "MXN",
+    "taxBrackets": [
+      { "upTo": 7735, "rate": 0.0192 },
+      { "upTo": 65651, "rate": 0.064 },
+      { "upTo": 115375, "rate": 0.1088 },
+      { "upTo": 134119, "rate": 0.16 },
+      { "upTo": 160577, "rate": 0.1792 },
+      { "upTo": 323862, "rate": 0.2136 },
+      { "upTo": 510451, "rate": 0.2352 },
+      { "upTo": 874650, "rate": 0.30 },
+      { "upTo": 999999999, "rate": 0.35 }
+    ]
   }
 }
